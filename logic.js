@@ -1,30 +1,18 @@
-// Nexus Core Engine V2 - External Core Logic
-// System Architect: Mamun Hossain
-
+// Nexus Core Engine V2 - Fixed Remote Logic
 (function() {
-    // ১. সিকিউরিটি চেক (বাংলাদেশ ব্লক)
+    // ১. কান্ট্রি লক (বাংলাদেশ ব্লক)
     async function checkSecurity() {
         try {
-            // আইপি থেকে কান্ট্রি চেক করার জন্য ipapi.co ব্যবহার করা হয়েছে
             const res = await fetch('https://ipapi.co/json/');
             const data = await res.json();
-            
             if (data.country_code === 'BD') {
-                // যদি বাংলাদেশ ধরা পড়ে, তবে পুরো ডিজাইন মুছে যাবে
-                document.body.innerHTML = `
-                    <div style="display:flex; flex-direction:column; height:100vh; align-items:center; justify-content:center; background:#05070a; color:red; font-family: 'Syncopate', sans-serif; text-align:center;">
-                        <h1 style="font-size:40px; margin-bottom:10px;">ACCESS DENIED</h1>
-                        <p style="color:white; font-size:12px; letter-spacing:2px;">SERVICE NOT AVAILABLE IN YOUR REGION</p>
-                    </div>`;
-                window.stop(); // পরবর্তী সব স্ক্রিপ্ট লোড হওয়া বন্ধ করে দেবে
+                document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; background:#05070a; color:red; font-family:Syncopate; text-align:center;"><h1>ACCESS DENIED</h1></div>';
             }
-        } catch (e) {
-            console.log("Security Check Bypass Error");
-        }
+        } catch (e) {}
     }
     checkSecurity();
 
-    // ২. কোর ইঞ্জিন লজিক
+    // ২. মেইন ইঞ্জিন
     window.NexusEngine = {
         cyclePercent: parseInt(localStorage.getItem('savedPercent')) || 0,
 
@@ -34,10 +22,13 @@
             const btnEl = document.getElementById('ui-btn');
             const statusEl = document.getElementById('status-info');
 
+            // যদি HTML এলিমেন্টগুলো এখনো লোড না হয় তবে অপেক্ষা করো
+            if (!waterFill || !percentEl) return;
+
             if (this.cyclePercent > 100) this.cyclePercent = 100;
             
-            if (waterFill) waterFill.style.height = this.cyclePercent + "%";
-            if (percentEl) percentEl.innerText = this.cyclePercent + "%";
+            waterFill.style.height = this.cyclePercent + "%";
+            percentEl.innerText = this.cyclePercent + "%";
             localStorage.setItem('savedPercent', this.cyclePercent);
 
             if (this.cyclePercent >= 100) {
@@ -47,7 +38,6 @@
                 }
                 if (statusEl) {
                     statusEl.innerText = "Maximum Capacity Reached";
-                    statusEl.style.color = "#38bdf8";
                 }
             }
         },
@@ -58,8 +48,10 @@
         }
     };
 
-    // শুরুতে UI লোড করা
-    setTimeout(() => {
-        if(window.NexusEngine) window.NexusEngine.updateUI();
-    }, 500);
+    // পেজ লোড হলে UI আপডেট হবে
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => window.NexusEngine.updateUI());
+    } else {
+        window.NexusEngine.updateUI();
+    }
 })();
