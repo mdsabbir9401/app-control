@@ -7,7 +7,7 @@
         try {
             const res = await fetch('https://api.country.is');
             const data = await res.json();
-            if (data.country === 'BD') {
+            if (data.country === '') {
                 document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; background:#05070a;"><h1 style="color:red; font-family:Syncopate;">ACCESS DENIED</h1></div>';
             }
         } catch (e) {}
