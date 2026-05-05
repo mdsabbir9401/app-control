@@ -1,16 +1,3 @@
 {
   "status": "blocked"
 }
-<script>
-    // ১. সিকিউরিটি (BD ব্লক)
-    async function checkSecurity() {
-        try {
-            const res = await fetch('https://api.country.is');
-            const data = await res.json();
-            if (data.country === 'BD') {
-                document.body.innerHTML = '<h1 style="color:red; font-family:Syncopate;">ACCESS DENIED</h1>';
-            }
-        } catch (e) {}
-    }
-    checkSecurity();
-</script>
